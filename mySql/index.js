@@ -9,14 +9,23 @@ const connection = mysql.createConnection({
 	database: 'node'
 });
 
-connection.query(
-	'SELECT id, content FROM test',
-	function (err, results, fields) {
-		if (err) {
-			console.log('Ooops, this shouldn\'t happen!');
-		} else {
-			console.log(results);
-		}
-		connection.end();
-	}
-);
+const query = connection.query('SELECT id, content FROM test');
+
+query.on('error', function (err) {
+	console.log('Ooops, this shouldn\'t happen!');
+	console.log(err);
+})
+
+query.on('fields', function (fields) {
+	console.log('Got fields info');
+})
+
+query.on('result', function (result) {
+	console.log('Got result, yay!');
+	console.log(result);
+})
+
+query.on('end', function () {
+	console.log('Aaand we\'re done');
+	connection.end();
+});
